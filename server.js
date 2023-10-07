@@ -15,6 +15,10 @@ app.use(express.urlencoded({ extended: true }));
 //     console.log("Tersambung ke database")
 // })
 
+app.get('/', (req, res) => {
+    res.send("Hello!")
+})
+
 //pada "/data" berguna memberi seluruh komentar dari database (dioper)
 app.get("/data", async (req, res) => {
     const contentId = req.query.content

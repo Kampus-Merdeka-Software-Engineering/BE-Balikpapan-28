@@ -1,8 +1,8 @@
 const express = require('express')
 const app = express()
-const{prisma}=require('./config/prisma')
+const { prisma } = require('./config/prisma')
 require('dotenv').config
-const port = process.env.PORT||3000
+const port = process.env.PORT || 3000
 
 app.use(express.static('public'))
 app.use(express.json())
@@ -16,10 +16,14 @@ app.use(express.urlencoded({ extended: true }));
 // })
 
 //pada "/data" berguna memberi seluruh komentar dari database (dioper)
-app.get("/data",async (req, res) => {
-    const data=await prisma.formcomment.findMany()
+app.get("/data", async (req, res) => {
+    const contentId = req.query.content
+    const data = await prisma.formComment.findMany({
+        where: contentId ? { babId: contentId } : {}
+    })
+
     res.status(200).json(data)
-    
+
     // const contentId = req.query.content;
     // const sql = `SELECT * FROM comments WHERE bab='${contentId}'`;
     // db.query(sql, (err, results) => {
@@ -34,14 +38,25 @@ app.get("/data",async (req, res) => {
 })
 
 //pada "/submit" digunakan untuk menyimpan komentar ke database
-app.post("/submit",async (req, res) => {
-    const{name,email,comment}=req.body
-    const submitComment=await prisma.formcomment.create({data:{
-        name, email, comment
-    }})
+app.post("/submit", async (req, res) => {
+    const { name, email, comment, bab } = req.body
+    const submitComment = await prisma.formComment.create({
+        data: {
+            name, email, comment, bab: {
+                connectOrCreate: {
+                    where: {
+                        name: bab
+                    },
+                    create: {
+                        name: bab
+                    },
+                }
+            }
+        }
+    })
     res.status(201).json({
-        message:'comment submited',
-        data:submitComment
+        message: 'comment submited',
+        data: submitComment
     })
 
     // const referringPage = req.header('Referer') || '/';

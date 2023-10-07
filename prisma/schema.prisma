@@ -10,10 +10,17 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model formcomment{
-  id Int @id @default(autoincrement())
-  name String
-  email String
+model FormComment {
+  id      Int    @id @default(autoincrement())
+  name    String
+  email   String
   comment String
+
+  bab   Bab    @relation(fields: [babId], references: [name], onDelete: Cascade)
+  babId String
 }
 
+model Bab {
+  name     String        @unique
+  comments FormComment[]
+}

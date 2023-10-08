@@ -44,6 +44,7 @@ app.get("/data", async (req, res) => {
 //pada "/submit" digunakan untuk menyimpan komentar ke database
 app.post("/submit", async (req, res) => {
     const { name, email, comment, bab } = req.body
+    const referringPage = req.header('Referer') || '/';
     const submitComment = await prisma.formComment.create({
         data: {
             name, email, comment, bab: {
@@ -58,12 +59,14 @@ app.post("/submit", async (req, res) => {
             }
         }
     })
-    res.status(201).json({
-        message: 'comment submited',
-        data: submitComment
-    })
+    
+    res.redirect(`${referringPage}#commentsSection`)
+    
+    // res.status(201).json({
+    //     message: 'comment submited',
+    //     data: submitComment
+    // })
 
-    // const referringPage = req.header('Referer') || '/';
     // const { name, email, comment, bab } = req.body
     // const sql = "INSERT INTO comments (nama, email, comments, bab) VALUES (?, ?, ?, ?)"
 
